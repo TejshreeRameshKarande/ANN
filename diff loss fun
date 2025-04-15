@@ -1,0 +1,118 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyPVC3IRNSDrbje0go6dBPbQ",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/TejshreeRameshKarande/ANN/blob/main/diff%20loss%20fun\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 38,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "tldeNEXBb9G6",
+        "outputId": "850c5c81-29c3-431d-8d98-a7f397674d5f"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Epoch 0, Loss: 0.4943\n",
+            "Epoch 100, Loss: 0.4943\n",
+            "Epoch 200, Loss: 0.4943\n",
+            "Epoch 300, Loss: 0.4943\n",
+            "Epoch 400, Loss: 0.4943\n",
+            "Epoch 500, Loss: 0.4943\n",
+            "Epoch 600, Loss: 0.4943\n",
+            "Epoch 700, Loss: 0.4943\n",
+            "Epoch 800, Loss: 0.4943\n",
+            "Epoch 900, Loss: 0.4943\n",
+            "\n",
+            "Final Predictions:\n",
+            "[[0.]\n",
+            " [0.]\n",
+            " [0.]\n",
+            " [1.]]\n"
+          ]
+        }
+      ],
+      "source": [
+        "import numpy as np\n",
+        "\n",
+        "# Sample Data (XOR)\n",
+        "X = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])\n",
+        "Y = np.array([[0], [1], [1], [0]])\n",
+        "\n",
+        "W = np.random.rand(2, 1)\n",
+        "b = np.random.rand(1)\n",
+        "lr = 0.1\n",
+        "epochs = 1000\n",
+        "\n",
+        "def sigmoid(x):\n",
+        "  return 1 / (1 + np.exp(-x))\n",
+        "\n",
+        "def sigmoid_derivative(x):\n",
+        "  return x * (1 - x)\n",
+        "\n",
+        "def mse_loss(y_true, y_pred):\n",
+        "  return np.mean((y_true - y_pred) ** 2)\n",
+        "\n",
+        "def cross_entropy_loss(y_true, y_pred):\n",
+        "  eps = 1e-15\n",
+        "  y_pred = np.clip(y_pred, eps, 1 - eps)\n",
+        "  return -np.mean(y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred))\n",
+        "\n",
+        "loss_type = 'cross_entropy'\n",
+        "\n",
+        "for epoch in range(epochs):\n",
+        "  z = np.dot(X, W) + b\n",
+        "\n",
+        "  A = sigmoid(z)\n",
+        "\n",
+        "  if loss_type == 'mse':\n",
+        "    loss = mse_loss(Y, A)\n",
+        "    d_loss = (Y - A) * sigmoid_derivative(A)\n",
+        "  elif loss_type == 'cross_entropy':\n",
+        "    oss = cross_entropy_loss(Y, A)\n",
+        "    d_loss = (A - Y)\n",
+        "\n",
+        "  dW = np.dot(X.T, d_loss)\n",
+        "  db = np.sum(d_loss)\n",
+        "\n",
+        "  W -= lr * dW\n",
+        "  b -= lr * db\n",
+        "\n",
+        "  if epoch % 100 == 0:\n",
+        "    print(f\"Epoch {epoch}, Loss: {loss:.4f}\")\n",
+        "\n",
+        "output = sigmoid(np.dot(X, W) + b)\n",
+        "print(\"\\nFinal Predictions:\")\n",
+        "print(output.round())"
+      ]
+    }
+  ]
+}
